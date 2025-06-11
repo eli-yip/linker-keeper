@@ -1063,13 +1063,10 @@ func main() {
 		ticker := time.NewTicker(30 * time.Second)
 		defer ticker.Stop()
 
-		for {
-			select {
-			case <-ticker.C:
-				err := pm.LoadConfig()
-				if err != nil {
-					log.Printf("定期加载配置失败: %v", err)
-				}
+		for range ticker.C {
+			err := pm.LoadConfig()
+			if err != nil {
+				log.Printf("定期加载配置失败: %v", err)
 			}
 		}
 	}()
