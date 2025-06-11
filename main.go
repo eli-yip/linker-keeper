@@ -1086,7 +1086,7 @@ func main() {
 		address = fmt.Sprintf("%s:%s", pm.config.Server.Host, pm.config.Server.Port)
 	}
 
-	log.Printf("进程管理器启动")
+	log.Printf("进程管理器（%s）启动", Version)
 	log.Printf("配置文件: %s", configPath)
 	log.Printf("Web界面: http://%s", address)
 	log.Fatal(http.ListenAndServe(address, nil))
