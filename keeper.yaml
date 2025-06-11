@@ -3,9 +3,9 @@
 
 # 服务器配置
 server:
-  port: "18083"          # Web服务端口
-  host: "0.0.0.0"       # 监听地址
-  refresh_time: 10      # 页面自动刷新时间(秒)
+  port: "18083" # Web 服务端口
+  host: "0.0.0.0" # 监听地址
+  refresh_time: 10 # 页面自动刷新时间 (秒)
 
 # 进程配置
 processes:
@@ -19,12 +19,12 @@ processes:
     environment:
       ENV: "production"
       LOG_LEVEL: "info"
-    user: ""              # 可选：指定运行用户
-    max_restarts: 10      # 最大重启次数
-    restart_delay: 5      # 重启延迟(秒)
-    description: "CAN总线桥接服务"
+    user: "" # 可选：指定运行用户
+    max_restarts: 10 # 最大重启次数
+    restart_delay: 5 # 重启延迟 (秒)
+    description: "CAN 总线桥接服务"
 
-  # Dashboard 服务  
+  # Dashboard 服务
   - name: "dashboard"
     command: "/opt/linkerbot/dashboard"
     args: ["--port", "3000"]
@@ -37,7 +37,7 @@ processes:
     user: ""
     max_restarts: 10
     restart_delay: 5
-    description: "Web仪表板服务"
+    description: "Web 仪表板服务"
 
   # Nginx 示例
   - name: "nginx"
@@ -45,12 +45,12 @@ processes:
     args: ["-g", "daemon off;"]
     workdir: "/etc/nginx"
     auto_restart: true
-    enabled: false        # 默认禁用
+    enabled: false # 默认禁用
     environment: {}
-    user: "root"          # 以root用户运行
+    user: "root" # 以 root 用户运行
     max_restarts: 5
     restart_delay: 3
-    description: "Nginx Web服务器"
+    description: "Nginx Web 服务器"
 
   # Python 脚本示例
   - name: "data-collector"
@@ -81,4 +81,4 @@ processes:
     user: "nodeuser"
     max_restarts: 8
     restart_delay: 7
-    description: "API服务器"
+    description: "API 服务器"

@@ -196,7 +196,7 @@ func (pm *ProcessManager) createDefaultConfig() error {
 	case ".yaml", ".yml":
 		data, err = yaml.Marshal(config)
 	default:
-		// 默认使用YAML格式
+		// 默认使用 YAML 格式
 		pm.configPath = pm.configPath + ".yaml"
 		data, err = yaml.Marshal(config)
 	}
@@ -250,7 +250,7 @@ func (pm *ProcessManager) validateConfig(config *Config) error {
 	processNames := make(map[string]bool)
 	for i, processConfig := range config.Processes {
 		if processConfig.Name == "" {
-			return fmt.Errorf("进程[%d]名称不能为空", i)
+			return fmt.Errorf("进程 [%d] 名称不能为空", i)
 		}
 		if processNames[processConfig.Name] {
 			return fmt.Errorf("进程名称重复: %s", processConfig.Name)
@@ -299,7 +299,7 @@ func (pm *ProcessManager) StartProcess(name string) error {
 	// 检查可执行文件是否存在
 	execPath := config.Command
 	if !filepath.IsAbs(execPath) {
-		// 如果不是绝对路径，在PATH中查找
+		// 如果不是绝对路径，在 PATH 中查找
 		if _, err := exec.LookPath(execPath); err != nil {
 			status.Status = "error"
 			status.LastError = fmt.Sprintf("命令不存在: %s", execPath)
@@ -319,7 +319,7 @@ func (pm *ProcessManager) StartProcess(name string) error {
 	if status.Restarts >= config.MaxRestarts {
 		status.Status = "disabled"
 		status.Config.AutoRestart = false
-		pm.addLog(name, fmt.Sprintf("ERROR: 重启次数过多(%d次)，已禁用自动重启", status.Restarts))
+		pm.addLog(name, fmt.Sprintf("ERROR: 重启次数过多 (%d次)，已禁用自动重启", status.Restarts))
 		return fmt.Errorf("进程 %s 重启次数过多，已禁用", name)
 	}
 
@@ -329,7 +329,7 @@ func (pm *ProcessManager) StartProcess(name string) error {
 	// 构建命令
 	var cmd *exec.Cmd
 	if needsSudo(config.Command, config.User) {
-		// 使用sudo启动
+		// 使用 sudo 启动
 		args := buildSudoArgs(config)
 		cmd = exec.CommandContext(ctx, "sudo", args...)
 	} else {
@@ -398,11 +398,11 @@ func (pm *ProcessManager) StartProcess(name string) error {
 	return nil
 }
 
-// buildSudoArgs 构建sudo命令参数
+// buildSudoArgs 构建 sudo 命令参数
 func buildSudoArgs(config ProcessConfig) []string {
 	args := []string{}
 
-	// 如果指定了用户，添加-u参数
+	// 如果指定了用户，添加-u 参数
 	if config.User != "" {
 		args = append(args, "-u", config.User)
 	}
@@ -445,7 +445,7 @@ func (pm *ProcessManager) StopProcess(name string) error {
 		done <- procInfo.Cmd.Wait()
 	}()
 
-	// 等待5秒，如果还没退出就强制杀死
+	// 等待 5 秒，如果还没退出就强制杀死
 	select {
 	case <-done:
 		// 进程已经退出
@@ -453,9 +453,9 @@ func (pm *ProcessManager) StopProcess(name string) error {
 		// 超时，强制杀死进程组
 		if procInfo.Cmd.Process != nil {
 			syscall.Kill(-procInfo.Cmd.Process.Pid, syscall.SIGKILL)
-			<-done // 等待Wait()完成
+			<-done // 等待 Wait() 完成
 		}
-		pm.addLog(name, "WARNING: 进程未在5秒内退出，已强制终止")
+		pm.addLog(name, "WARNING: 进程未在 5 秒内退出，已强制终止")
 	}
 
 	delete(pm.commands, name)
@@ -562,7 +562,7 @@ func (pm *ProcessManager) monitorProcess(name string) {
 			log.Printf("进程 %s 重启次数过多(%d次)，禁用自动重启", name, status.Restarts)
 			status.Config.AutoRestart = false
 			status.Status = "disabled"
-			pm.addLog(name, fmt.Sprintf("WARNING: 重启次数过多(%d次)，已禁用自动重启", status.Restarts))
+			pm.addLog(name, fmt.Sprintf("WARNING: 重启次数过多 (%d次)，已禁用自动重启", status.Restarts))
 			return
 		}
 
@@ -572,7 +572,7 @@ func (pm *ProcessManager) monitorProcess(name string) {
 			pm.addLog(name, fmt.Sprintf("INFO: %d秒后自动重启 (第%d次重启)", restartDelay, status.Restarts))
 			log.Printf("%d秒后自动重启进程 %s (第%d次重启)", restartDelay, name, status.Restarts)
 
-			// 使用goroutine避免阻塞
+			// 使用 goroutine 避免阻塞
 			go func() {
 				time.Sleep(time.Duration(restartDelay) * time.Second)
 				err := pm.StartProcess(name)
@@ -619,7 +619,7 @@ func (lw *logWriter) Write(p []byte) (n int, err error) {
 		}
 		logLine := fmt.Sprintf("[%s] %s: %s", time.Now().Format("15:04:05"), prefix, line)
 
-		// 保留最近50行输出
+		// 保留最近 50 行输出
 		status.Output = append(status.Output, logLine)
 		if len(status.Output) > 50 {
 			status.Output = status.Output[1:]
@@ -632,9 +632,9 @@ func (lw *logWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-// needsSudo 检查是否需要sudo权限
+// needsSudo 检查是否需要 sudo 权限
 func needsSudo(command, user string) bool {
-	// 如果指定了用户，需要sudo
+	// 如果指定了用户，需要 sudo
 	if user != "" {
 		return true
 	}
@@ -647,7 +647,7 @@ func needsSudo(command, user string) bool {
 	// 检查文件所有者
 	if info, err := os.Stat(command); err == nil {
 		if stat, ok := info.Sys().(*syscall.Stat_t); ok {
-			// 如果文件属于root用户
+			// 如果文件属于 root 用户
 			return stat.Uid == 0
 		}
 	}
@@ -878,13 +878,13 @@ func (pm *ProcessManager) handleIndex(w http.ResponseWriter, r *http.Request) {
 func (pm *ProcessManager) handleAPI(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// 解析路径: /api/process/name/action
+	// 解析路径：/api/process/name/action
 	path := r.URL.Path[len("/api/process/"):]
 	parts := strings.Split(path, "/")
 	if len(parts) < 2 {
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"success": false,
-			"error":   "无效的API路径",
+			"error":   "无效的 API 路径",
 		})
 		return
 	}
@@ -922,7 +922,7 @@ func (pm *ProcessManager) handleAPI(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// 启用自动重启API
+// 启用自动重启 API
 func (pm *ProcessManager) handleEnable(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -942,7 +942,7 @@ func (pm *ProcessManager) handleEnable(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// 重新加载配置API
+// 重新加载配置 API
 func (pm *ProcessManager) handleReload(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -960,7 +960,7 @@ func (pm *ProcessManager) handleReload(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// 日志API
+// 日志 API
 func (pm *ProcessManager) handleLogs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -982,14 +982,14 @@ func (pm *ProcessManager) handleLogs(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// 状态API
+// 状态 API
 func (pm *ProcessManager) handleStatus(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	processes := pm.GetProcesses()
 	json.NewEncoder(w).Encode(processes)
 }
 
-// 配置API
+// 配置 API
 func (pm *ProcessManager) handleConfig(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -1074,7 +1074,7 @@ func main() {
 		}
 	}()
 
-	// 设置Web路由
+	// 设置 Web 路由
 	http.HandleFunc("/", pm.handleIndex)
 	http.HandleFunc("/api/process/", pm.handleAPI)
 	http.HandleFunc("/api/enable/", pm.handleEnable)
@@ -1083,7 +1083,7 @@ func main() {
 	http.HandleFunc("/api/status", pm.handleStatus)
 	http.HandleFunc("/api/config", pm.handleConfig)
 
-	// 启动Web服务器
+	// 启动 Web 服务器
 	address := "0.0.0.0:8080"
 	if pm.config != nil {
 		address = fmt.Sprintf("%s:%s", pm.config.Server.Host, pm.config.Server.Port)
