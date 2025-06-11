@@ -2,4 +2,4 @@ module linker-keeper
 
 go 1.24.1
 
-require gopkg.in/yaml.v2 v2.4.0
+require github.com/goccy/go-yaml v1.18.0
