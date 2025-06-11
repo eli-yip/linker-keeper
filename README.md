@@ -1,5 +1,7 @@
 # LinkerBot Keeper
 
+[中文文档](./README_zhCN.md)
+
 A lightweight, web-based process management tool written in Go that provides monitoring, control, and automatic restart capabilities for system processes.
 
 ## Features
