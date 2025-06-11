@@ -1,0 +1,84 @@
+# 进程管理器配置文件
+# 支持 YAML 和 JSON 格式
+
+# 服务器配置
+server:
+  port: "18083"          # Web服务端口
+  host: "0.0.0.0"       # 监听地址
+  refresh_time: 10      # 页面自动刷新时间(秒)
+
+# 进程配置
+processes:
+  # CAN Bridge 服务
+  - name: "can-bridge"
+    command: "/opt/linkerbot/can-bridge"
+    args: []
+    workdir: "/opt/linkerbot"
+    auto_restart: true
+    enabled: true
+    environment:
+      ENV: "production"
+      LOG_LEVEL: "info"
+    user: ""              # 可选：指定运行用户
+    max_restarts: 10      # 最大重启次数
+    restart_delay: 5      # 重启延迟(秒)
+    description: "CAN总线桥接服务"
+
+  # Dashboard 服务  
+  - name: "dashboard"
+    command: "/opt/linkerbot/dashboard"
+    args: ["--port", "3000"]
+    workdir: "/opt/linkerbot"
+    auto_restart: true
+    enabled: true
+    environment:
+      NODE_ENV: "production"
+      PORT: "3000"
+    user: ""
+    max_restarts: 10
+    restart_delay: 5
+    description: "Web仪表板服务"
+
+  # Nginx 示例
+  - name: "nginx"
+    command: "/usr/sbin/nginx"
+    args: ["-g", "daemon off;"]
+    workdir: "/etc/nginx"
+    auto_restart: true
+    enabled: false        # 默认禁用
+    environment: {}
+    user: "root"          # 以root用户运行
+    max_restarts: 5
+    restart_delay: 3
+    description: "Nginx Web服务器"
+
+  # Python 脚本示例
+  - name: "data-collector"
+    command: "python3"
+    args: ["/opt/scripts/data_collector.py"]
+    workdir: "/opt/scripts"
+    auto_restart: true
+    enabled: false
+    environment:
+      PYTHONPATH: "/opt/scripts"
+      DATA_DIR: "/var/data"
+    user: "datauser"
+    max_restarts: 15
+    restart_delay: 10
+    description: "数据采集脚本"
+
+  # Node.js 应用示例
+  - name: "api-server"
+    command: "node"
+    args: ["server.js"]
+    workdir: "/opt/api"
+    auto_restart: true
+    enabled: false
+    environment:
+      NODE_ENV: "production"
+      PORT: "8000"
+      DB_HOST: "localhost"
+    user: "nodeuser"
+    max_restarts: 8
+    restart_delay: 7
+    description: "API服务器"
