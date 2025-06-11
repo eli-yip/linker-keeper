@@ -241,53 +241,8 @@ processes:
 
 ### Systemd 服务
 
-为 LinkerBot Keeper 创建 systemd 服务文件：
-
-```ini
-[Unit]
-Description=LinkerBot Keeper 进程管理器
-After=network.target
-
-[Service]
-Type=simple
-User=root
-ExecStart=/usr/local/bin/keeper /etc/keeper/config.yaml
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-```
-
 ```bash
-# 安装并启动服务
-sudo cp keeper.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable keeper
-sudo systemctl start keeper
-```
-
-### Docker 部署
-
-```dockerfile
-FROM golang:1.21-alpine AS builder
-WORKDIR /app
-COPY . .
-RUN go build -o keeper main.go
-
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates sudo
-WORKDIR /root/
-COPY --from=builder /app/keeper .
-COPY config.yaml .
-EXPOSE 8080
-CMD ["./keeper"]
-```
-
-```bash
-# 构建并运行
-docker build -t linkerbot-keeper .
-docker run -d -p 8080:8080 -v /path/to/config.yaml:/root/config.yaml linkerbot-keeper
+curl -L https://raw.githubusercontent.com/linker-bot/linker-keeper/refs/heads/main/scripts/install.sh | sudo bash
 ```
 
 ## 安全考虑

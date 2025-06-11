@@ -241,53 +241,8 @@ processes:
 
 ### Systemd Service
 
-Create a systemd service file for LinkerBot Keeper:
-
-```ini
-[Unit]
-Description=LinkerBot Keeper Process Manager
-After=network.target
-
-[Service]
-Type=simple
-User=root
-ExecStart=/usr/local/bin/keeper /etc/keeper/config.yaml
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-```
-
 ```bash
-# Install and start the service
-sudo cp keeper.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable keeper
-sudo systemctl start keeper
-```
-
-### Docker Deployment
-
-```dockerfile
-FROM golang:1.21-alpine AS builder
-WORKDIR /app
-COPY . .
-RUN go build -o keeper main.go
-
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates sudo
-WORKDIR /root/
-COPY --from=builder /app/keeper .
-COPY config.yaml .
-EXPOSE 8080
-CMD ["./keeper"]
-```
-
-```bash
-# Build and run
-docker build -t linkerbot-keeper .
-docker run -d -p 8080:8080 -v /path/to/config.yaml:/root/config.yaml linkerbot-keeper
+curl -L https://raw.githubusercontent.com/linker-bot/linker-keeper/refs/heads/main/scripts/install.sh | sudo bash
 ```
 
 ## Security Considerations
