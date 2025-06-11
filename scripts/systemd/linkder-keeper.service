@@ -1,0 +1,45 @@
+[Unit]
+Description=LinkerBot Program Keeper - Web-based application manager
+Documentation=https://github.com/linker-bot/linker-keeper
+After=network.target network-online.target
+Wants=network-online.target
+RequiresMountsFor=/opt
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/linker-keeper
+ExecStart=/opt/linker-keeper/linker-keeper /etc/linker-keeper/keeper.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=5s
+TimeoutStartSec=30s
+TimeoutStopSec=10s
+
+# 安全设置
+NoNewPrivileges=false
+PrivateTmp=false
+ProtectSystem=false
+ProtectHome=false
+
+# 资源限制
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# 环境变量
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="HOME=/root"
+
+# 日志配置
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=linker-keeper
+
+# 进程管理
+KillMode=mixed
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
+Alias=linker-keeper.service
